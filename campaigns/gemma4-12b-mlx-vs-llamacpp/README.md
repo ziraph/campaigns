@@ -54,6 +54,10 @@ The compare table at the end of each run reports per-variant decode tok/s, energ
 
 The published result and the full numbers are in the Ziraph apples-to-apples write-up: **[ziraph.com/blog/apples-to-apples-mlx-vs-llama-cpp-gemma-4](https://ziraph.com/blog/apples-to-apples-mlx-vs-llama-cpp-gemma-4)** (it walks through both this engine-isolated comparison and the real-world Ollama-tags one). Summary finding on an M1: decode is close to a tie; the real differences are MLX's per-invocation startup tax (visible on short runs) and a higher CPU-energy share, not raw throughput.
 
+## Reference results
+
+Reference aggregates for this campaign are pending a clean re-run. The original overnight run predated the llama.cpp b9330 token-parser fix ([ziraph#1205](https://github.com/mabis/ziraph/issues/1205)), so `llama-cli`'s decode tokens were not captured and the comparison summaries are incomplete on the llama.cpp side. A re-run on a current ziraph build (which captures the `[ Prompt: ... | Generation: N t/s ]` line) will populate them, at which point a `results/` folder lands here like the sibling Ollama campaign has. The headline finding (decode close to a tie) is in the [write-up](https://ziraph.com/blog/apples-to-apples-mlx-vs-llama-cpp-gemma-4), recovered by hand from the run logs.
+
 ## Reference hardware
 
 The published figures are from a MacBook Air M1 (8-core GPU, 16 GB). Your numbers will differ by chip; compare within the same chip class.

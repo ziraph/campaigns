@@ -12,7 +12,7 @@
 #   2) Any real difference GGUF vs MLX?  the compare table at the end - decode tok/s,
 #      energy/token, memory bandwidth, GPU power.
 #
-# HONESTY CAVEAT: this is NOT matched-quant. GGUF gemma4:12b is Q4_K_M (~4.8 bpw, 7.6 GB);
+# HONESTY CAVEAT: this is NOT matched-quant. GGUF gemma4:12b is Q4_K_M (~4.96 bpw, 7.6 GB);
 # gemma4:12b-mlx is nvfp4 (~4-bit FP, 10.0 GB). A delta mixes engine + quant - call it
 # "GGUF-as-shipped vs MLX-as-shipped," not "same weights."
 #

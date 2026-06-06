@@ -2,7 +2,7 @@
 
 The real-world "what you get from the two official tags" comparison. Both variants are `ollama run`; the difference is the engine Ollama picks for each tag.
 
-- **A** - `gemma4:12b` - GGUF **Q4_K_M** (~4.8 bpw, ~7.6 GB), llama.cpp engine.
+- **A** - `gemma4:12b` - GGUF **Q4_K_M** (~4.96 bpw, ~7.6 GB), llama.cpp engine.
 - **B** - `gemma4:12b-mlx` - **nvfp4** (~4-bit FP, ~10 GB), Ollama's MLX engine.
 
 > **Not matched-quant.** Q4_K_M and nvfp4 are different formats, and on the long prompt the two tags are even different model scopes (11.9B text vs a 13.0B unified text+vision+audio build). A delta here blends engine + quant (+ scope). Read it as "GGUF-as-shipped vs MLX-as-shipped," **not** "same weights." For the controlled engine verdict, use the sibling [`gemma4-12b-mlx-vs-llamacpp`](../gemma4-12b-mlx-vs-llamacpp/) campaign.
@@ -50,4 +50,4 @@ Use the `--keepalive=0` **flag**, not the `OLLAMA_KEEP_ALIVE=0` env var: the env
 
 ## Reference
 
-The real-world half of the Ziraph apples-to-apples write-up covers this: **[ziraph.com/blog/apples-to-apples-mlx-vs-llama-cpp-gemma-4](https://ziraph.com/blog/apples-to-apples-mlx-vs-llama-cpp-gemma-4)**. Reference figures are from a MacBook Air M1 (16 GB); compare within the same chip class.
+The real-world half of the Ziraph apples-to-apples write-up covers this: **[ziraph.com/blog/apples-to-apples-mlx-vs-llama-cpp-gemma-4](https://ziraph.com/blog/apples-to-apples-mlx-vs-llama-cpp-gemma-4)**. Reference figures are from a MacBook Air M1 (16 GB); compare within the same chip class. The aggregate summaries and σ-aware compare tables for both regimes are in [`results/`](results/) - diff your own run against them with `ziraph compare`.
