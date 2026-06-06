@@ -39,10 +39,14 @@ No local files to manage - Ollama stores the models.
 
 ## Running
 
+Run it straight from its URL - ziraph fetches the TOML, shows the commands, and (after you confirm) runs them locally. You still need Ollama running with the tags pulled (Prerequisites above):
+
 ```
-ziraph campaign campaigns/gemma4-12b-ollama-gguf-vs-mlx/campaign-short.toml
-ziraph campaign campaigns/gemma4-12b-ollama-gguf-vs-mlx/campaign-long.toml
+ziraph campaign https://github.com/ziraph/campaigns/blob/main/campaigns/gemma4-12b-ollama-gguf-vs-mlx/campaign-short.toml
+ziraph campaign https://github.com/ziraph/campaigns/blob/main/campaigns/gemma4-12b-ollama-gguf-vs-mlx/campaign-long.toml
 ```
+
+After cloning, pass a local path instead - e.g. `ziraph campaign campaigns/gemma4-12b-ollama-gguf-vs-mlx/campaign-short.toml`.
 
 Both variants pass `--keepalive=0` so the daemon drops each model the instant a run ends - only one model is resident at a time (~10 GB peak on 16 GB), and each run reloads symmetrically, so model-load time is counted on both sides. `schedule="interleaved"` (A,B,A,B…) is therefore safe and thermally fair.
 

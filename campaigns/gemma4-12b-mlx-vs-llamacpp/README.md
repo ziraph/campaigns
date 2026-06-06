@@ -37,10 +37,14 @@ gemma-4 is Apache-2.0 licensed.
 
 ## Running
 
+Run it straight from its URL - ziraph fetches the TOML, shows the commands, and (after you confirm) runs them locally. You still need the models and runners from Prerequisites above:
+
 ```
-ziraph campaign campaigns/gemma4-12b-mlx-vs-llamacpp/campaign-short.toml
-ziraph campaign campaigns/gemma4-12b-mlx-vs-llamacpp/campaign-long.toml
+ziraph campaign https://github.com/ziraph/campaigns/blob/main/campaigns/gemma4-12b-mlx-vs-llamacpp/campaign-short.toml
+ziraph campaign https://github.com/ziraph/campaigns/blob/main/campaigns/gemma4-12b-mlx-vs-llamacpp/campaign-long.toml
 ```
+
+After cloning, pass a local path instead - e.g. `ziraph campaign campaigns/gemma4-12b-mlx-vs-llamacpp/campaign-short.toml`.
 
 Both runners load -> run -> free on exit (no daemon), so ziraph attributes GPU work to each process directly and only one model is resident at a time - `schedule="interleaved"` is safe even on 16 GB. Thinking is off on both sides (answer-only). Run on a quiet machine with the external display asleep for clean thermals.
 

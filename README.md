@@ -39,7 +39,13 @@ Power, energy, and bandwidth depend on the chip. A number from an M1 is not comp
 
 ## Running a campaign from a URL
 
-Direct remote execution (`ziraph campaign <url>`) is on the roadmap. For now, clone this repo and pass a local path. When remote-pull ships, Phase 1 restricts the source to `github.com/ziraph/*` and prints every command a campaign would run for your review before anything executes.
+You can run a published campaign straight from its URL, without cloning:
+
+```
+ziraph campaign https://github.com/ziraph/campaigns/blob/main/campaigns/gemma4-12b-mlx-vs-llamacpp/campaign-short.toml
+```
+
+Only `github.com/ziraph` URLs are accepted (raw or `blob` form). ziraph fetches the TOML, shows the exact commands it will run, and asks you to confirm before anything executes (pass `-y` to skip the prompt in a script). The commands still run **locally**, through the same no-shell subprocess path as a local run, so you still need the models and runners the campaign uses - see each campaign's Prerequisites.
 
 ## Scope
 
