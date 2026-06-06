@@ -9,6 +9,7 @@ A **campaign** is a TOML file that defines a controlled, repeatable measurement.
 The point is reproducibility: a campaign is the recipe, a trace is the result. Publish the TOML and anyone can re-run the exact protocol on their own hardware and compare. A campaign can also sweep a matrix (N models × M runners), so one file expands into every variant combination.
 
 **Docs:**
+- Concept: [Multi-variant campaigns](https://ziraph.com/docs/concepts/multi-variant-campaigns)
 - Guide: [Running an N×M multi-variant campaign](https://ziraph.com/docs/guides/nxm-multi-variant-campaign)
 - Reference: [`campaign.toml` schema](https://ziraph.com/docs/reference/campaign)
 
