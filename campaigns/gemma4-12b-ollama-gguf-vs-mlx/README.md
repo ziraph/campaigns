@@ -19,6 +19,15 @@ The real-world "what you get from the two official tags" comparison. Both varian
 | `campaign-short.toml` | one paragraph | one-shot regime (not MLX's strength) |
 | `campaign-long.toml` | full tutorial | sustained-decode regime - run before any sustained claim |
 
+## Prerequisites
+
+Install and have **running** before the campaign:
+
+- **ziraph** - a recent release or dev build (see [`.ziraph-version`](../../.ziraph-version)). Verify: `ziraph --version`.
+- **Ollama** - version **0.30.5 or newer**, with its background service running (the macOS app, or `ollama serve` in a terminal). Both variants are `ollama run`, which talks to that daemon - if it is not running, nothing will execute. Verify: `ollama --version`, and `ollama ps` should respond (an empty table is fine).
+
+No Python or `llama-cli` needed here - inside Ollama, both the GGUF and MLX engines are bundled.
+
 ## Models
 
 ```
@@ -26,7 +35,7 @@ ollama pull gemma4:12b
 ollama pull gemma4:12b-mlx
 ```
 
-Requires **Ollama 0.30.5 or newer**. No local files to manage - Ollama stores the models.
+No local files to manage - Ollama stores the models.
 
 ## Running
 

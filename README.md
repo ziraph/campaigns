@@ -20,7 +20,7 @@ This repo is the official, curated set. Clone it, fetch the models a campaign ne
 ziraph campaign campaigns/<name>/campaign-short.toml
 ```
 
-Each campaign folder carries its TOML(s) plus a README explaining what it measures, how to obtain the models, and how to read the result.
+Each campaign folder carries its TOML(s) plus a README explaining what it measures, **what software it requires** (each README opens with a Prerequisites section - e.g. llama.cpp, Ollama, mlx_lm), how to obtain the models, and how to read the result.
 
 ## What's here
 
