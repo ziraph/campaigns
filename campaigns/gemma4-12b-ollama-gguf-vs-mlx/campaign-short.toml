@@ -1,0 +1,56 @@
+# gemma4:12b INSIDE OLLAMA - GGUF (Q4_K_M) vs MLX (gemma4:12b-mlx, nvfp4), Ollama 0.30.5.
+#
+# Both variants are `ollama run`, so there is NO co-residency problem: with --keepalive=0
+# the daemon DROPS each model the instant a run ends, so only one model is ever resident
+# (~10 GB peak on 16 GB). That makes the gold-standard INTERLEAVED schedule (A,B,A,B...)
+# for thermal fairness safe.
+#
+# Two questions (Ollama 0.30.5 / 16 GB M1):
+#   1) Is the old ">=32 GB to use MLX" floor still there?  gemma4:12b-mlx is nvfp4 - a
+#      format ONLY the MLX engine can run (llama.cpp can't). If its variant produces real
+#      tokens, the MLX engine ran on 16 GB and the floor is gone.
+#   2) Any real difference GGUF vs MLX?  the compare table at the end - decode tok/s,
+#      energy/token, memory bandwidth, GPU power.
+#
+# HONESTY CAVEAT: this is NOT matched-quant. GGUF gemma4:12b is Q4_K_M (~4.8 bpw, 7.6 GB);
+# gemma4:12b-mlx is nvfp4 (~4-bit FP, 10.0 GB). A delta mixes engine + quant - call it
+# "GGUF-as-shipped vs MLX-as-shipped," not "same weights."
+#
+# NOTE on load symmetry: use the `--keepalive=0` FLAG, not OLLAMA_KEEP_ALIVE=0 in env. The
+# env var only reaches the `ollama run` client; an already-running `ollama serve` daemon
+# keeps the model resident anyway. The flag is what actually reaches the request.
+# VERIFY: `ollama ps` should be EMPTY between runs.
+#
+# Models: `ollama pull gemma4:12b` and `ollama pull gemma4:12b-mlx` (see README.md).
+# Run on a quiet machine, external display asleep:
+#   ziraph campaign campaigns/gemma4-12b-ollama-gguf-vs-mlx/campaign-short.toml
+
+schema           = "ziraph-campaign/1"
+name             = "gemma4-12b-ollama-gguf-vs-mlx"
+out_dir          = "campaign-out/ollama-gguf-vs-mlx"
+runs_per_variant = 3
+schedule         = "interleaved"   # safe: --keepalive=0 -> one model resident at a time
+
+[methodology]
+name = "default"   # 2 untimed warmup + 3 measured runs per variant
+
+[output]
+aggregate      = true
+compare        = true
+compare_format = "text"
+
+# ---- A: GGUF (Q4_K_M, ~7.6 GB) - llama.cpp engine ----
+[[variant]]
+label   = "ollama-gguf"
+command = ["ollama", "run", "gemma4:12b", "--think=false", "--keepalive=0", "--verbose", "Explain attention mechanisms in one paragraph."]
+model_name      = "gemma4:12b"
+quantization    = "Q4_K_M"
+runtime_version = "ollama"
+
+# ---- B: MLX (nvfp4, ~10.0 GB) - Ollama's MLX engine ----
+[[variant]]
+label   = "ollama-mlx"
+command = ["ollama", "run", "gemma4:12b-mlx", "--think=false", "--keepalive=0", "--verbose", "Explain attention mechanisms in one paragraph."]
+model_name      = "gemma4:12b-mlx"
+quantization    = "nvfp4"
+runtime_version = "ollama"

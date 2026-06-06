@@ -1,0 +1,46 @@
+# gemma-4 12B - MLX vs non-MLX, MATCHED QUANT, LONG prompt (sustained-decode regime).
+#
+# Sibling of campaign-short.toml - identical setup, long output. This is the regime where
+# MLX's per-invocation startup tax amortizes over ~2,000 decode tokens, so the wall-clock
+# verdict can flip and MLX's sustained-decode behaviour shows. Both regimes matter: the
+# short/long flip IS the finding, not a footnote.
+#
+#   non-MLX = llama.cpp's GGML/Metal backend (llama-cli) on Q4_K_M (~4.96 bpw)
+#   MLX     = Apple's MLX framework (mlx_lm.generate) on mixed_4_6 (~4.94 bpw)
+# Same base weights, same mixed 4/6 scheme; runtime is the only variable. Both lean
+# in-process subprocesses -> symmetric attribution, interleaved-safe on 16GB.
+#
+# Thinking OFF both sides. Each long run generates ~2,000 tokens (~5 min), so the full
+# campaign (2 warmup + 3 measured, x2 variants, interleaved) is ~50 min - run it on a
+# quiet machine, external display asleep. See README.md for model setup.
+#   ziraph campaign campaigns/gemma4-12b-mlx-vs-llamacpp/campaign-long.toml
+
+schema           = "ziraph-campaign/1"
+name             = "gemma4-12b-llamacpp-vs-mlx-long"
+out_dir          = "campaign-out/llamacpp-vs-mlx-long"
+runs_per_variant = 3
+schedule         = "interleaved"
+
+[methodology]
+name = "default"   # 2 untimed warmup + 3 measured runs per variant
+
+[output]
+aggregate      = true
+compare        = true
+compare_format = "text"
+
+# ---- non-MLX: llama.cpp GGML/Metal backend on Q4_K_M ----
+[[variant]]
+label   = "llamacpp-gguf"
+command = ["llama-cli", "-m", "models/gemma4-12b.gguf", "-p", "Write a thorough, detailed technical tutorial explaining the Transformer architecture from the ground up: tokenization, embeddings, positional encodings, the full query/key/value self-attention computation and its mathematics, multi-head attention, the feed-forward sublayers, residual connections and layer normalization, how the decoder differs from the encoder, and how the model is trained end to end. Be comprehensive and precise.", "-n", "2048", "-st", "--jinja", "--reasoning", "off"]
+model_name      = "gemma4-12b.gguf"
+quantization    = "Q4_K_M"
+runtime_version = "llama.cpp-b9330"
+
+# ---- MLX: Apple's MLX framework (mlx_lm) on mixed_4_6 ----
+[[variant]]
+label   = "mlx-lm-mixed46"
+command = ["mlx_lm.generate", "--model", "models/gemma-4-12B-text-mlxlm", "--prompt", "Write a thorough, detailed technical tutorial explaining the Transformer architecture from the ground up: tokenization, embeddings, positional encodings, the full query/key/value self-attention computation and its mathematics, multi-head attention, the feed-forward sublayers, residual connections and layer normalization, how the decoder differs from the encoder, and how the model is trained end to end. Be comprehensive and precise.", "--max-tokens", "2048", "--chat-template-config", "{\"enable_thinking\": false}"]
+model_name      = "gemma-4-12B-text-mlxlm"
+quantization    = "mixed_4_6"
+runtime_version = "mlx-lm"

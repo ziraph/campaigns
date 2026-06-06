@@ -1,0 +1,49 @@
+# gemma-4 12B: MLX vs llama.cpp (matched quant)
+
+The engine-isolated "apples to apples" comparison. Both sides run the same gemma-4 12B weights at a matched ~4.9 bpw quant; the only variable is the inference engine.
+
+- **non-MLX** - llama.cpp's GGML/Metal backend via `llama-cli`, on a **Q4_K_M** GGUF (~4.96 bpw).
+- **MLX** - Apple's MLX framework via `mlx_lm.generate`, on a **mixed_4_6** build (4-bit base + 6-bit on embeddings / `v_proj` / `down_proj`, ~4.94 bpw).
+
+llama.cpp has no MLX backend and MLX is a separate framework, so an MLX-vs-not test is inherently the two runtimes side by side. That cross-runtime difference is the experiment, not a confound.
+
+## The two regimes
+
+| File | Prompt | Output | Why |
+|---|---|---|---|
+| `campaign-short.toml` | one paragraph | 512 tok | one-shot regime - MLX's per-invocation startup cost weighs on wall-clock |
+| `campaign-long.toml` | full tutorial | 2048 tok | sustained-decode regime - the startup cost amortizes; the wall-clock verdict can flip |
+
+Run both: the short/long flip is the finding, not a footnote.
+
+## Models
+
+You need two local model directories under `models/` (relative to where you run `ziraph campaign`):
+
+1. **`models/gemma4-12b.gguf`** - a Q4_K_M GGUF of gemma-4 12B. Obtain a Q4_K_M GGUF build from Hugging Face. Requires `llama-cli` from **llama.cpp build b9330 or newer** (older builds print a different summary line that the parser will not recognise).
+2. **`models/gemma-4-12B-text-mlxlm`** - a **mixed_4_6** `mlx_lm` conversion of gemma-4 12B (text-only). This is a custom conversion (4-bit base with 6-bit on the embedding / `v_proj` / `down_proj` tensors) to match the GGUF's mixed 4/6 scheme. The exact conversion is documented in the Ziraph blog post below. Requires `mlx_lm` on PATH.
+
+gemma-4 is Apache-2.0 licensed.
+
+## Running
+
+```
+ziraph campaign campaigns/gemma4-12b-mlx-vs-llamacpp/campaign-short.toml
+ziraph campaign campaigns/gemma4-12b-mlx-vs-llamacpp/campaign-long.toml
+```
+
+Both runners load -> run -> free on exit (no daemon), so ziraph attributes GPU work to each process directly and only one model is resident at a time - `schedule="interleaved"` is safe even on 16 GB. Thinking is off on both sides (answer-only). Run on a quiet machine with the external display asleep for clean thermals.
+
+## How to read it
+
+The compare table at the end of each run reports per-variant decode tok/s, energy per token, memory bandwidth, GPU power, and a winner per metric. The headline questions:
+
+- **Decode throughput** - is one engine actually faster at generating tokens, or is the difference elsewhere?
+- **Energy** - CPU vs GPU energy split per engine (MLX and llama.cpp drive the CPU differently).
+- **Wall-clock** - dominated by model-load + startup on short runs, by decode on long runs.
+
+The published result and the full numbers are in the Ziraph apples-to-apples write-up: **[ziraph.com/blog/apples-to-apples-mlx-vs-llama-cpp-gemma-4](https://ziraph.com/blog/apples-to-apples-mlx-vs-llama-cpp-gemma-4)** (it walks through both this engine-isolated comparison and the real-world Ollama-tags one). Summary finding on an M1: decode is close to a tie; the real differences are MLX's per-invocation startup tax (visible on short runs) and a higher CPU-energy share, not raw throughput.
+
+## Reference hardware
+
+The published figures are from a MacBook Air M1 (8-core GPU, 16 GB). Your numbers will differ by chip; compare within the same chip class.

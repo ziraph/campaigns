@@ -1,0 +1,54 @@
+# gemma-4 12B - MLX vs non-MLX, MATCHED QUANT, SHORT prompt (one-shot regime).
+#
+# Engine-isolated comparison: both sides are lean in-process subprocesses, so the
+# ONLY variable is the inference engine.
+#   non-MLX = llama.cpp's GGML/Metal backend (llama-cli) on a Q4_K_M GGUF
+#   MLX     = Apple's MLX framework (mlx_lm.generate) on a mixed_4_6 build
+#
+# Matched quant: Q4_K_M (~4.96 bpw) vs mixed_4_6 (4-bit base + 6-bit on embed/v_proj/
+# down_proj, ~4.94 bpw) - same base weights, same mixed 4/6 scheme. (llama.cpp has no
+# MLX backend; MLX is a separate framework, so an MLX-vs-not test is inherently the two
+# runtimes side by side. That cross-runtime difference IS the experiment.)
+#
+# Both runners LOAD -> run -> FREE on exit (no daemon), so (a) ziraph attributes GPU
+# work to each process directly (no "unattributed GPU" asterisk) and (b) only one model
+# is resident at a time, so schedule="interleaved" (thermally fair) is safe on 16GB.
+#
+# Thinking OFF both sides (answer-only): llama-cli `--reasoning off`; mlx_lm
+# `--chat-template-config {"enable_thinking": false}`. `-st` keeps llama-cli single-turn
+# / non-interactive. SHORT prompt = one-shot regime, where MLX's per-invocation startup
+# tax tends to sink its wall-clock even though its decode is competitive.
+#
+# Models: see this campaign's README.md for how to obtain models/gemma4-12b.gguf and
+# the models/gemma-4-12B-text-mlxlm build. Run on a quiet machine, external display asleep:
+#   ziraph campaign campaigns/gemma4-12b-mlx-vs-llamacpp/campaign-short.toml
+
+schema           = "ziraph-campaign/1"
+name             = "gemma4-12b-llamacpp-vs-mlx-short"
+out_dir          = "campaign-out/llamacpp-vs-mlx-short"
+runs_per_variant = 3
+schedule         = "interleaved"   # safe: both runners free memory on exit
+
+[methodology]
+name = "default"   # 2 untimed warmup + 3 measured runs per variant
+
+[output]
+aggregate      = true
+compare        = true
+compare_format = "text"
+
+# ---- non-MLX: llama.cpp GGML/Metal backend on Q4_K_M ----
+[[variant]]
+label   = "llamacpp-gguf"
+command = ["llama-cli", "-m", "models/gemma4-12b.gguf", "-p", "Explain attention mechanisms in one paragraph.", "-n", "512", "-st", "--jinja", "--reasoning", "off"]
+model_name      = "gemma4-12b.gguf"
+quantization    = "Q4_K_M"
+runtime_version = "llama.cpp-b9330"
+
+# ---- MLX: Apple's MLX framework (mlx_lm) on mixed_4_6 ----
+[[variant]]
+label   = "mlx-lm-mixed46"
+command = ["mlx_lm.generate", "--model", "models/gemma-4-12B-text-mlxlm", "--prompt", "Explain attention mechanisms in one paragraph.", "--max-tokens", "512", "--chat-template-config", "{\"enable_thinking\": false}"]
+model_name      = "gemma-4-12B-text-mlxlm"
+quantization    = "mixed_4_6"
+runtime_version = "mlx-lm"

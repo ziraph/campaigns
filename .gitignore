@@ -1,0 +1,12 @@
+# Model files are not tracked - obtain them per each campaign's README.
+models/
+*.gguf
+*.safetensors
+
+# Campaign output (traces, summaries, compare tables) is generated locally.
+campaign-out/
+*.ndjson
+*.trace
+
+# macOS
+.DS_Store

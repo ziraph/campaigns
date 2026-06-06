@@ -1,0 +1,9 @@
+# Minimum ziraph requirements for the campaigns in this repo.
+#
+# Campaign config schema: ziraph-campaign/1
+#
+# These campaigns use features that landed in ziraph through early June 2026:
+# campaign mode, the llama.cpp b9330 conversation-mode parser, and mlx_lm / Ollama
+# runner output parsing. Use a recent ziraph release or dev build, and check
+# `ziraph --version`. Each campaign's variant `runtime_version` field records the
+# exact tool build the reference figures came from.
