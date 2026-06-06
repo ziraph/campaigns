@@ -4,7 +4,7 @@ Reproducible local AI measurement protocols for Apple Silicon, published by the 
 
 ## What is a campaign?
 
-A **campaign** is a TOML file that defines a controlled, repeatable measurement. It lists the workloads to compare (the **variants**), how many timed runs to take of each, the warmup/cooldown protocol, the schedule (interleaved, sequential, or randomized), and how to aggregate and compare the results. Ziraph executes it, wrapping each subprocess to measure ANE/GPU/CPU power, energy per token, memory bandwidth, and thermal state, then writes a trace per run and a σ-aware cross-variant comparison table.
+A **campaign** is a TOML file that defines a controlled, repeatable measurement. It lists the workloads to compare (the **variants**), how many timed runs to take of each, the warmup/cooldown protocol, the schedule (interleaved, sequential, or randomized), and how to aggregate and compare the results. Ziraph executes it, wrapping each subprocess and writing a trace per run: a plain ndjson file that records 26 telemetry signals every tick - ANE/GPU/CPU power and energy, DRAM bandwidth, GPU die temperature, DVFM clock-residency histograms, a per-PID GPU-energy split, token counts, and more - under a 55-field header carrying the chip, build, quant, baselines, and method. Call it ~80 fields a run, not a single tok/s number. It then folds those runs into a σ-aware cross-variant comparison table.
 
 The point is reproducibility: a campaign is the recipe, a trace is the result. Publish the TOML and anyone can re-run the exact protocol on their own hardware and compare. A campaign can also sweep a matrix (N models × M runners), so one file expands into every variant combination.
 
