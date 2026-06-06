@@ -1,0 +1,22 @@
+[
+  {
+    "name": "gemma4-12b-mlx-vs-llamacpp-short",
+    "title": "gemma-4 12B: MLX vs llama.cpp - short prompt (matched quant)",
+    "summary": "Engine-isolated MLX vs llama.cpp at a matched ~4.9 bpw quant; one-shot regime."
+  },
+  {
+    "name": "gemma4-12b-mlx-vs-llamacpp-long",
+    "title": "gemma-4 12B: MLX vs llama.cpp - long prompt (matched quant)",
+    "summary": "The same matched-quant engine test, sustained-decode regime."
+  },
+  {
+    "name": "gemma4-12b-ollama-gguf-vs-mlx-short",
+    "title": "gemma-4 12B in Ollama: GGUF vs MLX - short prompt (as shipped)",
+    "summary": "The two official Ollama tags as shipped (not matched-quant); one-shot regime."
+  },
+  {
+    "name": "gemma4-12b-ollama-gguf-vs-mlx-long",
+    "title": "gemma-4 12B in Ollama: GGUF vs MLX - long prompt (as shipped)",
+    "summary": "The same as-shipped Ollama tags, sustained-decode regime (decode near-tie)."
+  }
+]

@@ -21,11 +21,11 @@
 #
 # Models: see this campaign's README.md for how to obtain models/gemma4-12b.gguf and
 # the models/gemma-4-12B-text-mlxlm build. Run on a quiet machine, external display asleep:
-#   ziraph campaign campaigns/gemma4-12b-mlx-vs-llamacpp/campaign-short.toml
+#   ziraph campaign remote gemma4-12b-mlx-vs-llamacpp-short
 
 schema           = "ziraph-campaign/1"
-name             = "gemma4-12b-llamacpp-vs-mlx-short"
-out_dir          = "campaign-out/llamacpp-vs-mlx-short"
+name             = "gemma4-12b-mlx-vs-llamacpp-short"
+out_dir          = "campaign-out/gemma4-12b-mlx-vs-llamacpp-short"
 runs_per_variant = 3
 schedule         = "interleaved"   # safe: both runners free memory on exit
 

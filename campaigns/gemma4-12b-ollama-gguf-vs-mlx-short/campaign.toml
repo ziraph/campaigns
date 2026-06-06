@@ -23,11 +23,11 @@
 #
 # Models: `ollama pull gemma4:12b` and `ollama pull gemma4:12b-mlx` (see README.md).
 # Run on a quiet machine, external display asleep:
-#   ziraph campaign campaigns/gemma4-12b-ollama-gguf-vs-mlx/campaign-short.toml
+#   ziraph campaign remote gemma4-12b-ollama-gguf-vs-mlx-short
 
 schema           = "ziraph-campaign/1"
-name             = "gemma4-12b-ollama-gguf-vs-mlx"
-out_dir          = "campaign-out/ollama-gguf-vs-mlx"
+name             = "gemma4-12b-ollama-gguf-vs-mlx-short"
+out_dir          = "campaign-out/gemma4-12b-ollama-gguf-vs-mlx-short"
 runs_per_variant = 3
 schedule         = "interleaved"   # safe: --keepalive=0 -> one model resident at a time
 

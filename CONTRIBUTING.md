@@ -4,18 +4,20 @@ Campaigns here are reproducible measurement protocols. The bar is honesty and re
 
 ## Layout
 
-Add a folder under `campaigns/<name>/`:
+Add a folder under `campaigns/<name>/` with **exactly one** `campaign.toml`:
 
 ```
 campaigns/<name>/
-  campaign.toml          # or campaign-short.toml / campaign-long.toml for regimes
+  campaign.toml          # exactly one TOML per subdir, always named campaign.toml
   README.md              # required - see below
-  results/               # optional - reference trace(s) from your run, for comparison
+  results/               # optional - reference summaries + compare table from your run
 ```
+
+One campaign per subdir - the subdir name *is* the campaign id (`ziraph campaign remote <name>` resolves it to that single `campaign.toml`). If you have regimes (short / long), make them **separate** subdirs - `<name>-short/`, `<name>-long/` - and cross-link their READMEs. Set each `out_dir` to `campaign-out/<name>` so runs don't collide, add the campaign to [`campaigns/index.json`](campaigns/index.json) (the list `ziraph campaign remote` shows), and check `scripts/check-campaigns.sh` passes.
 
 ## The TOML
 
-- Reference models by a **relative `models/<file>` path** or by tool tag (e.g. an Ollama tag), never an absolute path. No `/Users/<you>/…` paths - they leak your machine and break for everyone else.
+- Reference models by a **`models/<file>` path relative to the working directory** ziraph runs in (not the repo, not the TOML's location) - or by tool tag (e.g. an Ollama tag). Never an absolute path: no `/Users/<you>/…` paths - they leak your machine, break for everyone else, and can't work for a `remote` run (the fetched TOML runs against the user's own `models/`).
 - Keep the methodology explicit: `runs_per_variant`, a `[methodology]` (warmup/cooldown), and a `schedule`. State why the schedule is safe (co-residency, memory).
 - See the [`campaign.toml` reference](https://ziraph.com/docs/reference/campaign) and the [N×M guide](https://ziraph.com/docs/guides/nxm-multi-variant-campaign).
 

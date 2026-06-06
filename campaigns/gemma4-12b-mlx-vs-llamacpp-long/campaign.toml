@@ -1,6 +1,6 @@
 # gemma-4 12B - MLX vs non-MLX, MATCHED QUANT, LONG prompt (sustained-decode regime).
 #
-# Sibling of campaign-short.toml - identical setup, long output. This is the regime where
+# Sibling of the gemma4-12b-mlx-vs-llamacpp-short campaign - identical setup, long output. This is the regime where
 # MLX's per-invocation startup tax amortizes over ~2,000 decode tokens, so the wall-clock
 # verdict can flip and MLX's sustained-decode behaviour shows. Both regimes matter: the
 # short/long flip IS the finding, not a footnote.
@@ -13,11 +13,11 @@
 # Thinking OFF both sides. Each long run generates ~2,000 tokens (~5 min), so the full
 # campaign (2 warmup + 3 measured, x2 variants, interleaved) is ~50 min - run it on a
 # quiet machine, external display asleep. See README.md for model setup.
-#   ziraph campaign campaigns/gemma4-12b-mlx-vs-llamacpp/campaign-long.toml
+#   ziraph campaign remote gemma4-12b-mlx-vs-llamacpp-long
 
 schema           = "ziraph-campaign/1"
-name             = "gemma4-12b-llamacpp-vs-mlx-long"
-out_dir          = "campaign-out/llamacpp-vs-mlx-long"
+name             = "gemma4-12b-mlx-vs-llamacpp-long"
+out_dir          = "campaign-out/gemma4-12b-mlx-vs-llamacpp-long"
 runs_per_variant = 3
 schedule         = "interleaved"
 

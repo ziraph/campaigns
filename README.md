@@ -12,40 +12,47 @@ The point is reproducibility: a campaign is the recipe, a trace is the result. P
 - Guide: [Running an N×M multi-variant campaign](https://ziraph.com/docs/guides/nxm-multi-variant-campaign)
 - Reference: [`campaign.toml` schema](https://ziraph.com/docs/reference/campaign)
 
-**See it in action:** the write-up [Apples to apples: MLX vs llama.cpp on gemma-4](https://ziraph.com/blog/apples-to-apples-mlx-vs-llama-cpp-gemma-4) is built entirely from the two campaigns in this repo - a good read for what these protocols produce and how to interpret the result.
+**See it in action:** the write-up [Apples to apples: MLX vs llama.cpp on gemma-4](https://ziraph.com/blog/apples-to-apples-mlx-vs-llama-cpp-gemma-4) is built entirely from campaigns in this repo - a good read for what these protocols produce and how to interpret the result.
 
-This repo is the official, curated set. Clone it, fetch the models a campaign needs, and run:
+This repo is the official, curated set. Run a campaign straight from the registry by name:
 
 ```
-ziraph campaign campaigns/<name>/campaign-short.toml
+ziraph campaign remote gemma4-12b-mlx-vs-llamacpp-short
 ```
 
-Each campaign folder carries its TOML(s) plus a README explaining what it measures, **what software it requires** (each README opens with a Prerequisites section - e.g. llama.cpp, Ollama, mlx_lm), how to obtain the models, and how to read the result.
+`ziraph campaign remote` with no name lists them all. See [Running a campaign](#running-a-campaign) for the local-path and URL forms; either way you provide the models and runners it needs (each campaign's README has a Prerequisites section).
+
+Each campaign folder carries one `campaign.toml` plus a README explaining what it measures, **what software it requires** (each README opens with a Prerequisites section - e.g. llama.cpp, Ollama, mlx_lm), how to obtain the models, and how to read the result.
 
 ## What's here
 
+Each campaign is one subdirectory with a single `campaign.toml`; regimes (short / long) are separate campaigns - run both, the short/long flip is the finding.
+
 | Campaign | What it measures |
 |---|---|
-| [`gemma4-12b-mlx-vs-llamacpp`](campaigns/gemma4-12b-mlx-vs-llamacpp/) | Engine-isolated: Apple MLX (`mlx_lm`) vs llama.cpp's Metal backend (`llama-cli`), matched quant (Q4_K_M vs mixed_4_6), short + long regimes. The "apples to apples" test. |
-| [`gemma4-12b-ollama-gguf-vs-mlx`](campaigns/gemma4-12b-ollama-gguf-vs-mlx/) | Real-world: the two official Ollama tags (GGUF Q4_K_M vs MLX nvfp4) as shipped. Not matched-quant - see its README. |
+| [`gemma4-12b-mlx-vs-llamacpp-short`](campaigns/gemma4-12b-mlx-vs-llamacpp-short/) | Engine-isolated MLX (`mlx_lm`) vs llama.cpp (`llama-cli`), matched quant, one-shot prompt. The "apples to apples" test - short regime. |
+| [`gemma4-12b-mlx-vs-llamacpp-long`](campaigns/gemma4-12b-mlx-vs-llamacpp-long/) | The same matched-quant engine test, sustained-decode prompt - where the wall-clock verdict can flip. |
+| [`gemma4-12b-ollama-gguf-vs-mlx-short`](campaigns/gemma4-12b-ollama-gguf-vs-mlx-short/) | Real-world: the two official Ollama tags (GGUF Q4_K_M vs MLX nvfp4) as shipped, one-shot prompt. Not matched-quant - see its README. |
+| [`gemma4-12b-ollama-gguf-vs-mlx-long`](campaigns/gemma4-12b-ollama-gguf-vs-mlx-long/) | The same as-shipped Ollama tags, sustained-decode prompt - where decode lands a near-tie. |
 
 ## Models are not included
 
-Campaigns reference models by a relative `models/<file>` path or by Ollama tag. The model files are large and are not in this repo; each campaign's README documents exactly how to obtain or build them. Put GGUF/MLX files under `models/` in your clone (gitignored) or edit the paths.
+Campaigns reference models by a `models/<file>` path **relative to your current working directory** (where you run `ziraph campaign`), or by Ollama tag. The model files are large and are not in this repo; each campaign's README documents exactly how to obtain or build them. Put GGUF/MLX files under `models/` in the directory you run from (`models/` is gitignored). This holds for `remote` runs too - the fetched `campaign.toml` runs against *your* `models/`, never a copy in the repo.
 
 ## Results are hardware-specific
 
 Power, energy, and bandwidth depend on the chip. A number from an M1 is not comparable to an M4 Max. When comparing your run to a published reference, compare within the same chip class; the reference figures in each README state the hardware they came from.
 
-## Running a campaign from a URL
+## Running a campaign
 
-You can run a published campaign straight from its URL, without cloning:
+| Form | What it does |
+|---|---|
+| `ziraph campaign remote <name>` | Fetch + run a campaign from this registry by name - the easy path. |
+| `ziraph campaign remote` | List every available campaign. |
+| `ziraph campaign campaigns/<name>/campaign.toml` | Run a local path, after cloning. |
+| `ziraph campaign https://github.com/ziraph/…/campaign.toml` | Run a specific URL - the escape hatch for a non-`main` branch or fork. |
 
-```
-ziraph campaign https://github.com/ziraph/campaigns/blob/main/campaigns/gemma4-12b-mlx-vs-llamacpp/campaign-short.toml
-```
-
-Only `github.com/ziraph` URLs are accepted (raw or `blob` form). ziraph fetches the TOML, shows the exact commands it will run, and asks you to confirm before anything executes (pass `-y` to skip the prompt in a script). The commands still run **locally**, through the same no-shell subprocess path as a local run, so you still need the models and runners the campaign uses - see each campaign's Prerequisites.
+`remote` only ever reaches `github.com/ziraph/campaigns` on `main`. ziraph fetches the `campaign.toml`, shows the exact commands it will run, and asks you to confirm before anything executes (`-y` skips the prompt in scripts). Commands run **locally**, through the same no-shell subprocess path as a local run - relative paths (`models/`, `out_dir`) resolve against your current directory, never the download location.
 
 ## Scope
 

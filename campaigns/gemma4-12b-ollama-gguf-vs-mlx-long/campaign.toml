@@ -10,17 +10,17 @@
 # gemma4:12b-mlx is nvfp4 (~4.5 bpw, 13.0B UNIFIED text+vision+audio). A delta blends
 # engine + quant + model scope. This is the "what you get from the two official tags"
 # comparison, NOT a controlled engine verdict - that's the matched-quant llama.cpp redo
-# in the sibling gemma4-12b-mlx-vs-llamacpp campaign.
+# in the sibling gemma4-12b-mlx-vs-llamacpp-long campaign.
 #
 # Both sides: --keepalive=0 (reload each run, symmetric) + --think=false (answer-only).
 # Output length is prompt-driven on both (the Ollama CLI has no num-predict flag); the long
 # tutorial prompt yields a sustained-decode workload. Each long run is several minutes, so
 # the full campaign is ~50 min - run on a quiet machine, external display asleep:
-#   ziraph campaign campaigns/gemma4-12b-ollama-gguf-vs-mlx/campaign-long.toml
+#   ziraph campaign remote gemma4-12b-ollama-gguf-vs-mlx-long
 
 schema           = "ziraph-campaign/1"
 name             = "gemma4-12b-ollama-gguf-vs-mlx-long"
-out_dir          = "campaign-out/ollama-gguf-vs-mlx-long"
+out_dir          = "campaign-out/gemma4-12b-ollama-gguf-vs-mlx-long"
 runs_per_variant = 3
 schedule         = "interleaved"   # --keepalive=0 + cooldown frees between runs
 
