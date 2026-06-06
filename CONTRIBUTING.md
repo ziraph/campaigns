@@ -29,7 +29,7 @@ campaigns/<name>/
 
 ## Roadmap
 
-- **Phase 1 (now):** clone + run locally. Remote pull (`ziraph campaign <url>`) is tracked at [ziraph#1212](https://github.com/mabis/ziraph/issues/1212) and will be restricted to `github.com/ziraph/*` first, with a mandatory preview of every command before execution.
+- **Phase 1 (now):** clone + run locally. Remote pull (`ziraph campaign <url>`) is on the roadmap and will be restricted to `github.com/ziraph/*` first, with a mandatory preview of every command before execution.
 - **Phase 2:** provenance / signing for trusted sources.
 - **Phase 3:** community-contributed campaigns and private-org registries.
 

@@ -56,7 +56,7 @@ The published result and the full numbers are in the Ziraph apples-to-apples wri
 
 ## Reference results
 
-Reference aggregates for this campaign are pending a clean re-run. The original overnight run predated the llama.cpp b9330 token-parser fix ([ziraph#1205](https://github.com/mabis/ziraph/issues/1205)), so `llama-cli`'s decode tokens were not captured and the comparison summaries are incomplete on the llama.cpp side. A re-run on a current ziraph build (which captures the `[ Prompt: ... | Generation: N t/s ]` line) will populate them, at which point a `results/` folder lands here like the sibling Ollama campaign has. The headline finding (decode close to a tie) is in the [write-up](https://ziraph.com/blog/apples-to-apples-mlx-vs-llama-cpp-gemma-4), recovered by hand from the run logs.
+Reference aggregates for this campaign are pending a clean re-run on a current ziraph build; once captured, a `results/` folder lands here like the sibling [Ollama campaign](../gemma4-12b-ollama-gguf-vs-mlx/results/) has. The headline finding - decode close to a tie - is in the [write-up](https://ziraph.com/blog/apples-to-apples-mlx-vs-llama-cpp-gemma-4).
 
 ## Reference hardware
 

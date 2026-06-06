@@ -39,7 +39,7 @@ Power, energy, and bandwidth depend on the chip. A number from an M1 is not comp
 
 ## Running a campaign from a URL
 
-Direct remote execution (`ziraph campaign <url>`) is on the roadmap ([ziraph#1212](https://github.com/mabis/ziraph/issues/1212)). For now, clone this repo and pass a local path. When remote-pull ships, Phase 1 restricts the source to `github.com/ziraph/*` and prints every command a campaign would run for your review before anything executes.
+Direct remote execution (`ziraph campaign <url>`) is on the roadmap. For now, clone this repo and pass a local path. When remote-pull ships, Phase 1 restricts the source to `github.com/ziraph/*` and prints every command a campaign would run for your review before anything executes.
 
 ## Scope
 
