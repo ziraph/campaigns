@@ -1,0 +1,49 @@
+# gemma-4 12B - QAT Q4 vs standard (PTQ) Q4, MATCHED quant format, SHORT prompt (one-shot).
+#
+# Replicates a widely-shared AMD RX 7800 XT / ROCm comparison (Gemma 4 12B UD-Q4_K_XL vs
+# its QAT sibling) on Apple Silicon, and adds the dimension that comparison lacks: energy
+# per token, memory-bandwidth %, and thermals.
+#
+# Both sides are the SAME model at the SAME quant FORMAT (Unsloth Dynamic Q4_K_XL) through
+# the SAME engine (llama.cpp / Metal). The only variable is whether the weights were
+# quantization-aware trained (QAT) or post-training quantized (standard PTQ).
+#
+# QAT is the smaller file (~6.24 GiB vs ~6.85 GiB). LLM decode on Apple Silicon is
+# memory-bound, so the prediction is that the smaller QAT weights move fewer bytes per
+# token -> faster decode AND lower energy/token. This campaign measures whether that holds.
+#
+# Both runners LOAD -> run -> FREE on exit (no daemon), one model resident at a time, so
+# schedule="interleaved" (thermally fair) is safe on 16 GB. Thinking OFF (answer-only);
+# `-st` keeps llama-cli single-turn / non-interactive. SHORT prompt = one-shot regime.
+# Models: see this campaign's README.md. Run on a quiet machine, external display asleep:
+#   ziraph campaign remote gemma4-12b-qat-vs-standard-q4-short
+
+schema           = "ziraph-campaign/1"
+name             = "gemma4-12b-qat-vs-standard-q4-short"
+out_dir          = "campaign-out/gemma4-12b-qat-vs-standard-q4-short"
+runs_per_variant = 5
+schedule         = "interleaved"   # safe: both runners free memory on exit
+
+[methodology]
+name = "default"   # 2 untimed warmup + 5 measured runs per variant
+
+[output]
+aggregate      = true
+compare        = true
+compare_format = "text"
+
+# ---- standard: post-training-quantized UD-Q4_K_XL (~6.85 GiB) ----
+[[variant]]
+label   = "standard-q4"
+command = ["llama-cli", "-m", "models/gemma-4-12b-it-UD-Q4_K_XL.gguf", "-p", "Write a Python function that returns the n-th Fibonacci number iteratively, with a docstring and three doctest examples.", "-n", "512", "-st", "--jinja", "--reasoning", "off"]
+model_name      = "gemma-4-12b-it-UD-Q4_K_XL.gguf"
+quantization    = "UD-Q4_K_XL (PTQ)"
+runtime_version = "llama.cpp-b9330"
+
+# ---- QAT: quantization-aware-trained UD-Q4_K_XL (~6.24 GiB) ----
+[[variant]]
+label   = "qat-q4"
+command = ["llama-cli", "-m", "models/gemma-4-12B-it-qat-UD-Q4_K_XL.gguf", "-p", "Write a Python function that returns the n-th Fibonacci number iteratively, with a docstring and three doctest examples.", "-n", "512", "-st", "--jinja", "--reasoning", "off"]
+model_name      = "gemma-4-12B-it-qat-UD-Q4_K_XL.gguf"
+quantization    = "UD-Q4_K_XL (QAT)"
+runtime_version = "llama.cpp-b9330"

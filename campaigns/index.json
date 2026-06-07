@@ -18,5 +18,15 @@
     "name": "gemma4-12b-ollama-gguf-vs-mlx-long",
     "title": "gemma-4 12B in Ollama: GGUF vs MLX - long prompt (as shipped)",
     "summary": "The same as-shipped Ollama tags, sustained-decode regime (decode near-tie)."
+  },
+  {
+    "name": "gemma4-12b-qat-vs-standard-q4-short",
+    "title": "gemma-4 12B: QAT Q4 vs standard Q4 - short prompt (matched UD-Q4_K_XL)",
+    "summary": "Does quantization-aware training beat post-training Q4 on decode speed and energy/token? Same UD-Q4_K_XL format via llama.cpp; one-shot regime."
+  },
+  {
+    "name": "gemma4-12b-qat-vs-standard-q4-long",
+    "title": "gemma-4 12B: QAT Q4 vs standard Q4 - long prompt (matched UD-Q4_K_XL)",
+    "summary": "The same QAT-vs-PTQ test, sustained-decode regime - where the smaller QAT model's lower bytes-per-token should show its clearest energy/token edge."
   }
 ]

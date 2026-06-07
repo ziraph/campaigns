@@ -1,0 +1,43 @@
+# gemma-4 12B - QAT Q4 vs standard (PTQ) Q4, MATCHED quant format, LONG prompt (sustained decode).
+#
+# The sustained-decode sibling of gemma4-12b-qat-vs-standard-q4-short. Same two models
+# (Unsloth Dynamic Q4_K_XL, QAT vs PTQ), same engine (llama.cpp / Metal), longer prompt
+# and a 1024-token cap so decode runs long enough to settle into a steady state - this is
+# where a smaller (QAT) model's lower bytes-per-token should show its clearest decode and
+# energy/token edge on a memory-bound chip.
+#
+# Both runners LOAD -> run -> FREE on exit (no daemon), one model resident at a time, so
+# schedule="interleaved" (thermally fair) is safe on 16 GB. Thinking OFF (answer-only);
+# `-st` keeps llama-cli single-turn / non-interactive.
+# Models: see this campaign's README.md. Run on a quiet machine, external display asleep:
+#   ziraph campaign remote gemma4-12b-qat-vs-standard-q4-long
+
+schema           = "ziraph-campaign/1"
+name             = "gemma4-12b-qat-vs-standard-q4-long"
+out_dir          = "campaign-out/gemma4-12b-qat-vs-standard-q4-long"
+runs_per_variant = 5
+schedule         = "interleaved"   # safe: both runners free memory on exit
+
+[methodology]
+name = "default"   # 2 untimed warmup + 5 measured runs per variant
+
+[output]
+aggregate      = true
+compare        = true
+compare_format = "text"
+
+# ---- standard: post-training-quantized UD-Q4_K_XL (~6.85 GiB) ----
+[[variant]]
+label   = "standard-q4"
+command = ["llama-cli", "-m", "models/gemma-4-12b-it-UD-Q4_K_XL.gguf", "-p", "Implement an LRU cache in Python as a class with O(1) get and put, using a doubly linked list plus a hash map. Include full docstrings, type hints, and edge-case handling, then explain the time and space complexity of each operation in detail.", "-n", "1024", "-st", "--jinja", "--reasoning", "off"]
+model_name      = "gemma-4-12b-it-UD-Q4_K_XL.gguf"
+quantization    = "UD-Q4_K_XL (PTQ)"
+runtime_version = "llama.cpp-b9330"
+
+# ---- QAT: quantization-aware-trained UD-Q4_K_XL (~6.24 GiB) ----
+[[variant]]
+label   = "qat-q4"
+command = ["llama-cli", "-m", "models/gemma-4-12B-it-qat-UD-Q4_K_XL.gguf", "-p", "Implement an LRU cache in Python as a class with O(1) get and put, using a doubly linked list plus a hash map. Include full docstrings, type hints, and edge-case handling, then explain the time and space complexity of each operation in detail.", "-n", "1024", "-st", "--jinja", "--reasoning", "off"]
+model_name      = "gemma-4-12B-it-qat-UD-Q4_K_XL.gguf"
+quantization    = "UD-Q4_K_XL (QAT)"
+runtime_version = "llama.cpp-b9330"
